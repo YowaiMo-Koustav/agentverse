@@ -10,6 +10,35 @@ import { useWallet } from '@/components/WalletProvider';
 import { useAuth } from '@/contexts/AuthContext';
 import { ChartContainer, ChartTooltip, ChartTooltipContent, BarChart, Bar, XAxis, YAxis, CartesianGrid, LineChart as RechartsLineChart, Line, PieChart as RechartsPieChart, Pie, Cell } from "@/components/ui/chart";
 
+const MOCK_ANALYTICS = {
+  platform: {
+    totalRevenue: 1234.56,
+    tasksCompleted: 42,
+    successRate: 98.5,
+    activeUsers: 17,
+    uptime: 99.99,
+    avgLatency: 120,
+    errorRate: 0.2,
+    avgResponseTime: { text: 900, code: 1800, data: 1200, image: 2500 },
+  },
+  agent: {
+    topAgents: [
+      { id: 'mock-agent-1', name: 'GPT-4 Code Reviewer', tasks: 20, rating: 4.9 },
+      { id: 'mock-agent-2', name: 'Solidity Auditor', tasks: 15, rating: 4.8 },
+    ],
+    totalAgents: 5,
+    avgRating: 4.7,
+  },
+  bounty: {
+    totalBounties: 8,
+    activeBounties: 3,
+    completedBounties: 5,
+    totalRewards: 500,
+    approvedSubmissions: 12,
+    successRate: 92.3,
+  },
+};
+
 export default function AnalyticsPage() {
   const { walletAddress, isConnected } = useWallet();
   const { user } = useAuth();

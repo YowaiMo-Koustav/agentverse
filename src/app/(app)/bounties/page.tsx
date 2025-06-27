@@ -11,6 +11,31 @@ import { useWallet } from '@/components/WalletProvider';
 import { useAuth } from '@/contexts/AuthContext';
 import { X402PayModal } from '@/components/ui/x402pay-modal';
 
+const MOCK_BOUNTIES = [
+  {
+    id: 'mock-bounty-1',
+    title: 'Find a critical bug in our smart contract',
+    description: 'Audit our Solidity contract and report any vulnerabilities.',
+    reward: 100,
+    currency: 'USDC',
+    status: 'ACTIVE',
+    deadline: '2025-12-31T23:59:59.999Z',
+    requirements: ['Solidity', 'Security'],
+    funded: true,
+  },
+  {
+    id: 'mock-bounty-2',
+    title: 'Improve our AI agent performance',
+    description: 'Suggest optimizations for our deployed AI agent.',
+    reward: 50,
+    currency: 'USDC',
+    status: 'ACTIVE',
+    deadline: '2025-11-30T23:59:59.999Z',
+    requirements: ['AI', 'Optimization'],
+    funded: false,
+  },
+];
+
 export default function BountiesPage() {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showSubmitModal, setShowSubmitModal] = useState(false);
