@@ -22,7 +22,7 @@ export default function BountyDetailPage() {
   const [submissionText, setSubmissionText] = useState('');
   const [proofText, setProofText] = useState('');
   const queryClient = useQueryClient();
-  const { walletAddress, isConnected } = useWallet();
+  const { walletAddress = '', isConnected = false } = useWallet() as { walletAddress?: string; isConnected?: boolean };
   const { user } = useAuth();
 
   const { data: bounty, isLoading, error } = useQuery({
