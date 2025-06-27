@@ -1,6 +1,5 @@
-
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import {
@@ -8,7 +7,10 @@ import {
   Award,
   BrainCircuit,
   Settings,
-  ChevronLeft,
+  User,
+  BarChart3,
+  Menu,
+  X,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import Logo from '@/components/logo';
@@ -18,86 +20,156 @@ const navItems = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/bounties', label: 'Bounties', icon: Award },
   { href: '/agents', label: 'Agents', icon: BrainCircuit },
+  { href: '/analytics', label: 'Analytics', icon: BarChart3 },
+  { href: '/profile', label: 'Profile', icon: User },
 ];
 
 export function MainNav() {
   const pathname = usePathname();
-  const [isCollapsed, setIsCollapsed] = useState(false);
-  
-  const toggleCollapse = () => setIsCollapsed(!isCollapsed);
+  const [isMobileOpen, setIsMobileOpen] = useState(false);
+
+  // Close sidebar on route change (mobile)
+  useEffect(() => {
+    setIsMobileOpen(false);
+  }, [pathname]);
+
+  const toggleMobile = () => setIsMobileOpen(!isMobileOpen);
 
   return (
-    <div
-      className={cn(
-        'relative min-h-screen border-r flex flex-col bg-background/60 backdrop-blur-lg transition-[width] duration-300 ease-in-out',
-        isCollapsed ? 'w-20' : 'w-64'
-      )}
-    >
-       <div className={cn("flex items-center h-16 border-b px-4", isCollapsed ? "justify-center" : "justify-between")}>
-          <div className={cn("transition-opacity duration-200", isCollapsed ? "opacity-0 invisible" : "opacity-100 visible")}>
-            <Logo />
-          </div>
-          <Button
-            onClick={toggleCollapse}
-            variant="ghost"
-            size="icon"
-            className="absolute right-0 translate-x-1/2 top-6 bg-background border rounded-full"
-          >
-            <ChevronLeft size={20} className={cn('transition-transform duration-300', isCollapsed && 'rotate-180')} />
-          </Button>
-      </div>
+    <>
+      {/* Mobile Hamburger */}
+      <button
+        className="md:hidden fixed top-4 left-4 z-50 bg-background/80 backdrop-blur-sm border rounded-lg p-2 shadow-lg hover:bg-background/90 transition-colors"
+        onClick={toggleMobile}
+        aria-label="Open navigation"
+      >
+        <Menu className="w-5 h-5" />
+      </button>
 
-      <nav className="flex flex-col space-y-1 p-2 mt-4 flex-grow">
-        {navItems.map((item) => {
-          const isActive = pathname === item.href;
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              title={isCollapsed ? item.label : ''}
-              className={cn(
-                'flex items-center p-3 rounded-lg text-muted-foreground font-medium transition-colors duration-200 overflow-hidden',
-                'hover:bg-accent hover:text-accent-foreground',
-                isActive && 'bg-accent text-accent-foreground',
-                isCollapsed && 'justify-center'
-              )}
-            >
-              <item.icon className={cn("h-5 w-5 flex-shrink-0 transition-transform duration-200", isActive && "scale-110")} />
-              <span
+      {/* Desktop Sidebar */}
+      <div className="hidden md:flex fixed left-0 top-0 h-full w-64 bg-background/95 backdrop-blur-sm border-r border-border/50 flex-col z-40">
+        {/* Logo Section */}
+        <div className="flex items-center h-16 px-4 border-b border-border/50">
+          <Logo />
+        </div>
+
+        {/* Navigation Items */}
+        <nav className="flex-1 px-3 py-4 space-y-1">
+          {navItems.map((item) => {
+            const isActive = pathname === item.href;
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
                 className={cn(
-                  'ml-4 whitespace-nowrap transition-opacity duration-200 ease-in-out',
-                  isCollapsed ? 'opacity-0' : 'opacity-100',
+                  'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 group',
+                  'hover:bg-accent/50 hover:text-accent-foreground',
+                  isActive 
+                    ? 'bg-accent text-accent-foreground shadow-sm' 
+                    : 'text-muted-foreground'
                 )}
               >
-                {item.label}
-              </span>
-            </Link>
-          );
-        })}
-        
-        <div className="flex-grow" />
+                <item.icon className={cn(
+                  "w-5 h-5 transition-transform duration-200",
+                  isActive && "scale-110",
+                  "group-hover:scale-105"
+                )} />
+                <span className="truncate">{item.label}</span>
+              </Link>
+            );
+          })}
+        </nav>
 
-         <Link
+        {/* Bottom Section */}
+        <div className="p-3 border-t border-border/50">
+          <Link
             href="/settings"
-            title={isCollapsed ? 'Settings' : ''}
             className={cn(
-                'flex items-center p-3 rounded-lg text-muted-foreground font-medium transition-colors duration-200 overflow-hidden',
-                'hover:bg-accent hover:text-accent-foreground',
-                pathname === '/settings' && 'bg-accent text-accent-foreground',
-                isCollapsed && 'justify-center'
+              'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 group',
+              'hover:bg-accent/50 hover:text-accent-foreground',
+              pathname === '/settings' 
+                ? 'bg-accent text-accent-foreground shadow-sm' 
+                : 'text-muted-foreground'
             )}
-            >
-            <Settings className="h-5 w-5 flex-shrink-0" />
-            <span
+          >
+            <Settings className="w-5 h-5 group-hover:scale-105 transition-transform duration-200" />
+            <span className="truncate">Settings</span>
+          </Link>
+        </div>
+      </div>
+
+      {/* Mobile Overlay */}
+      <div
+        className={cn(
+          'fixed inset-0 z-40 bg-black/20 backdrop-blur-sm transition-opacity duration-300 md:hidden',
+          isMobileOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+        )}
+        onClick={toggleMobile}
+        aria-hidden="true"
+      />
+
+      {/* Mobile Sidebar */}
+      <div
+        className={cn(
+          'fixed top-0 left-0 z-50 h-full w-80 bg-background/95 backdrop-blur-sm border-r border-border/50 flex flex-col transition-transform duration-300 ease-out md:hidden',
+          isMobileOpen ? 'translate-x-0' : '-translate-x-full'
+        )}
+      >
+        {/* Mobile Header */}
+        <div className="flex items-center justify-between h-16 px-4 border-b border-border/50">
+          <Logo />
+          <Button
+            onClick={toggleMobile}
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8"
+          >
+            <X className="w-4 h-4" />
+          </Button>
+        </div>
+
+        {/* Mobile Navigation */}
+        <nav className="flex-1 px-3 py-4 space-y-1">
+          {navItems.map((item) => {
+            const isActive = pathname === item.href;
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
                 className={cn(
-                  'ml-4 whitespace-nowrap transition-opacity duration-200 ease-in-out',
-                  isCollapsed ? 'opacity-0' : 'opacity-100',
+                  'flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium transition-all duration-200',
+                  'hover:bg-accent/50 hover:text-accent-foreground',
+                  isActive 
+                    ? 'bg-accent text-accent-foreground shadow-sm' 
+                    : 'text-muted-foreground'
                 )}
-            >
-                Settings
-            </span>
-        </Link>
-      </nav>
-    </div>
+                onClick={toggleMobile}
+              >
+                <item.icon className="w-5 h-5" />
+                <span>{item.label}</span>
+              </Link>
+            );
+          })}
+        </nav>
+
+        {/* Mobile Bottom Section */}
+        <div className="p-3 border-t border-border/50">
+          <Link
+            href="/settings"
+            className={cn(
+              'flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium transition-all duration-200',
+              'hover:bg-accent/50 hover:text-accent-foreground',
+              pathname === '/settings' 
+                ? 'bg-accent text-accent-foreground shadow-sm' 
+                : 'text-muted-foreground'
+            )}
+            onClick={toggleMobile}
+          >
+            <Settings className="w-5 h-5" />
+            <span>Settings</span>
+          </Link>
+        </div>
+      </div>
+    </>
   );
 }

@@ -77,21 +77,15 @@ const ChartTooltipContent = React.forwardRef<
       label,
       formatter,
       color,
-      name,
     },
     ref
   ) => {
-    const tooltipConfig = React.useContext(
-      (ChartContainer as any).Context
-    )?.chartConfig
-
     if (!active || !payload || payload.length === 0) {
       return null
     }
 
     const item = payload[0]
     const id = item.dataKey as string
-    const config = tooltipConfig?.[id]
     const finalName = item.name
     const value = item.value
     const finalColor = item.color as string
@@ -126,9 +120,11 @@ const ChartTooltipContent = React.forwardRef<
               />
             )}
             <div className="flex flex-1 justify-between leading-none">
-              <span className="text-muted-foreground">{config?.label ?? finalName}</span>
+              <span className="text-muted-foreground">{item.name}</span>
               <span className="font-bold text-foreground">
-                {formatter?.(value, finalName, item, 0, payload) ?? value}
+                {formatter && value !== undefined
+                  ? formatter(value, finalName ?? '', item, 0, payload)
+                  : value ?? ''}
               </span>
             </div>
           </div>
